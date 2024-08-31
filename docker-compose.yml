@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  ros2_container:
+    image: ubuntu-ros2-jazzy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: "host"  # Utiliser le réseau de l'hôte pour accéder au LAN
+    devices:
+      - /dev/video0:/dev/video0  # Donner accès au périphérique vidéo
+    volumes:
+      - ./data:/data  # Monter des volumes si nécessaire
+    tty: true  # Permet d'ouvrir une session terminal interactive
+    stdin_open: true  # Permet d'ouvrir l'entrée standard
+    command: ["tail", "-f", "/dev/null"]  # Garde le conteneur en cours d'exécution
+    environment:
+      - DISPLAY=$DISPLAY  # Utiliser l'affichage de l'hôte, si nécessaire
+      - QT_X11_NO_MITSHM=1
+      - USER=ros  # Définir l'utilisateur par défaut pour le conteneur
+    user: ros  # Utiliser l'utilisateur ros par défaut
+
