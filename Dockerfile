@@ -61,10 +61,8 @@ RUN usermod -a -G video ros
 RUN mkdir /var/run/sshd && echo 'ros ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 RUN mkdir -p /home/ros/ros2_ws/src/android_ros_test
-RUN ls -lah /home/ros/ros2_ws/src/android_ros_test
 COPY  FILE/ /home/ros/ros2_ws/src/android_ros_test/
-
-RUN ls -lah /home/ros/ros2_ws/src/android_ros_test
+#RUN ls -lah /home/ros/ros2_ws/src/android_ros_test
 RUN chown -R ros:ros /home/ros/ros2_ws
 
 
@@ -73,6 +71,6 @@ RUN chmod +x /entrypoint.sh
 
 USER ros
 
-RUN /bin/bash -c "source /opt/ros/$ROSDISTRO/setup.bash && cd /home/ros/ros2_ws && colcon build"
+RUN /bin/bash -c "source /opt/ros/$ROSDISTRO/setup.bash && cd /home/ros/ros2_ws && colcon build && source /home/ros/ros2_ws/install/setup.bash"
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
