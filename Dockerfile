@@ -6,6 +6,7 @@ ARG ROSDISTRO="jazzy"
 ENV ROSDISTRO=$ROSDISTRO
 
 RUN apt-get update && apt-get install -y \
+    apt-utils \
     locales \
     curl \
     iproute2 \
@@ -46,28 +47,32 @@ RUN apt-get update && apt-get upgrade -y && \
     python3-rosdep \
     python3-vcstool \
     ros-$ROSDISTRO-cv-bridge \
-    ros-$ROSDISTRO-rosbridge-server && \
+    ros-$ROSDISTRO-rosbridge-server \ 
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \ 
+    gstreamer1.0-libav && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN rosdep init && rosdep update
 
 RUN useradd -m ros && echo "ros:ros" | chpasswd && adduser ros sudo
 RUN usermod -a -G irc ros
-
+RUN usermod -a -G video ros
 RUN mkdir /var/run/sshd && echo 'ros ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-RUN mkdir -p /home/ros/ros2_ws/src
+RUN mkdir -p /home/ros/ros2_ws/src/android_ros_test
+RUN ls -lah /home/ros/ros2_ws/src/android_ros_test
+COPY  FILE/ /home/ros/ros2_ws/src/android_ros_test/
 
-COPY APP/android_test /home/ros/ros2_ws/src/android_test
-
+RUN ls -lah /home/ros/ros2_ws/src/android_ros_test
 RUN chown -R ros:ros /home/ros/ros2_ws
 
-USER ros
-
-RUN /bin/bash -c "source /opt/ros/$ROSDISTRO/setup.bash && cd /home/ros/ros2_ws && colcon build"
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+USER ros
+
+RUN /bin/bash -c "source /opt/ros/$ROSDISTRO/setup.bash && cd /home/ros/ros2_ws && colcon build"
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
